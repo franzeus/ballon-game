@@ -1,0 +1,54 @@
+body { font-family: 'Arial', sans-serif; font-size: 0.9em; margin:0; line-height:1.5em; background:#125871; color:#09f; }
+
+#wrapper {
+  width:732px; margin:auto; margin-top:8em; 
+  box-shadow: 0px 0px 10px #31ADE2;
+  position:relative;
+}
+
+#parallaxFrame {
+  z-index: 2;
+  pointer-events:none;
+  position:absolute;
+  width:2000px;
+  height:390px;
+  background: url('../assets/parallax_background.jpg') repeat-x;
+  background-size: 40%;
+  /*-webkit-transition: all 10s linear;*/
+}
+
+.parallaxAnimation {
+  -webkit-transform: translate(-200px, 0);
+}
+
+#pictureFrame {
+  overflow: hidden;
+  z-index: 2;
+	pointer-events:none;
+	position:absolute;
+	width:732px; height:513px;
+	top:-65px;
+	left:-48px;
+	background: url('../assets/pic_frame_small.png') no-repeat;
+}
+
+#canvas {
+  z-index:3;
+  position:absolute;
+  border:0px solid #09f;
+  width:640px;
+  height:390px;
+  /*background: #005EB0;*/
+}
+.left {
+  float:left;
+}
+.right {
+  float:right;
+}
+.clear {
+  clear:both;
+}
+#gameWrapper {
+  overflow: hidden;
+}
