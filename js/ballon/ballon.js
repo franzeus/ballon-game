@@ -31,7 +31,7 @@ var Ballon = function(_options) {
     this.wiggleMaxAngle = 1;
     this.wiggleMinAngle = -1;
 
-    this.lifes = 1;
+    this.lifes = 2;
     this.isCrashed = false;
     this.blockNavigation = false;
     this.lastObjectCrash = null;
@@ -87,6 +87,16 @@ var Ballon = function(_options) {
             }
         },
 
+        // Thrown back
+        {
+            name : 'pushedBack',
+            beforeFn : 'initPushedBack',
+            updateFn : 'updatePushedBack',
+            sprite : {
+                frame : 1
+            }
+        },
+
         // Dead
         {
             name : 'dead',
@@ -136,7 +146,7 @@ Ballon.prototype.registerEvents = function() {
 };
 
 Ballon.prototype.setFlyState = function(type) {
-    if (!this.isCrashed) {
+    if (!this.isCrashed && !this.blockNavigation) {
         this.setState(type);
     }
 };
@@ -205,9 +215,7 @@ Ballon.prototype.initLanded = function() {
 };
 
 Ballon.prototype.updateLanded = function() {
-
     this.x -= this.vx + GameEngine.ENV.speed * 6;
-
 };
 
 Ballon.prototype.updateCrashing = function() {
@@ -291,8 +299,11 @@ Ballon.prototype.hasCollidedWith = function(object, callback) {
     if (this.isCrashed) return false;
 
     if (this.lastObjectCrash === object) {
+        this.setState('pushedBack');
         return false;
     }
+    
+    this.lastObjectCrash = object;
 
     this.lifes--;
 
@@ -300,11 +311,30 @@ Ballon.prototype.hasCollidedWith = function(object, callback) {
         this.setState('crashing');
     }
 
-    this.lastObjectCrash = object;
-
     if (typeof callback === 'function') {
         callback();
     }
+};
+
+Ballon.prototype.initPushedBack = function() {
+    
+    this.blockNavigation = true;
+    this.pushBackLimit = this.x - 60;
+    this.initPushPackPosition = { x: this.x };
+    this.pushBackForce = 1;
+    this.pushBackAcceleration = 0.5;
+};
+
+Ballon.prototype.updatePushedBack = function() {
+
+    if ( this.x > this.pushBackLimit ) {
+        this.pushBackAcceleration += 0.5;
+        this.x -= this.pushBackForce + this.pushBackAcceleration;
+    } else {
+        this.blockNavigation = false;
+        this.setState('decline');
+    }
+
 };
 
 Ballon.prototype.selected = function() {
