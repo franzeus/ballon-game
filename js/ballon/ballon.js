@@ -31,7 +31,7 @@ var Ballon = function(_options) {
     this.wiggleMaxAngle = 1;
     this.wiggleMinAngle = -1;
 
-    this.lifes = 3;
+    this.lifes = 1;
     this.isCrashed = false;
     this.blockNavigation = false;
     this.lastObjectCrash = null;
@@ -217,11 +217,16 @@ Ballon.prototype.updateCrashing = function() {
 };
 
 Ballon.prototype.initCrashing = function() {
+    
+    this.setState('crashing');
+
+    this.blockNavigation = true;
+
     this.setRelease();
+    
     this.doWiggle = false;
     this.balancePointY = null;
     this.isCrashed = true;
-    this.blockNavigation = true;
 };
 
 Ballon.prototype.dead = function() {
