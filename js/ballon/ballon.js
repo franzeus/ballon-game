@@ -80,6 +80,7 @@ var Ballon = function(_options) {
         // landed
         {
             name : 'landed',
+            beforeFn : 'initLanded',
             updateFn : 'updateLanded',
             sprite : {
                 frame : 0
@@ -106,31 +107,38 @@ var Ballon = function(_options) {
 Ballon.prototype = new Graphic();
 
 Ballon.prototype.registerEvents = function() {
-    var self = this;
+    
+    var ARROW_UP = 38,
+        ARROW_DOWN = 40,
+        self = this;
 
+    // Mouse Interaction
     jQuery(GameEngine.canvas).mousedown(function() {
-        self.setState.call(self, 'rise');
+        self.setFlyState.call(self, 'rise');
     });
 
     jQuery(GameEngine.canvas).mouseup(function() {
-        self.setState.call(self, 'decline');
+        self.setFlyState.call(self, 'decline');
     });
 
-    var ARROW_UP = 38,
-        ARROW_DOWN = 40;
-
+    // Keyboard Interaction
     jQuery(document).keydown(function(e) {
 
         if (e.keyCode === ARROW_UP)
-            self.setState.call(self, 'rise');
-
+            self.setFlyState.call(self, 'rise');
     });
 
     jQuery(document).keyup(function(e) {
-        self.setState.call(self, 'decline');
+        self.setFlyState.call(self, 'decline');
     });
 
     return this;
+};
+
+Ballon.prototype.setFlyState = function(type) {
+    if (!this.isCrashed) {
+        this.setState(type);
+    }
 };
 
 Ballon.prototype.update = function() {
@@ -139,10 +147,15 @@ Ballon.prototype.update = function() {
         this.wiggle();
     }
 
-    // Collided with bottom
-    if (this.collideWithBottom() && !this.isUp && !this.isCrashed) {
+    // Left world
+    if (this.leftWorldOnLeft()) {
 
-        this.setState('landed');        
+        this.setState('dead');
+
+    // Collided with bottom
+    } else if (this.collideWithBottom() && !this.isUp && !this.isCrashed) {
+
+        this.setState('landed');
     
     // Collided with top
     } else if (this.collideWithTop() && this.isUp) {
@@ -187,17 +200,14 @@ Ballon.prototype.fly = function() {
     this.y += this.vy * this.gravity - this.riseUp;
 };
 
-Ballon.prototype.updateLanded = function() {
-
+Ballon.prototype.initLanded = function() {
     this.cancelWiggle();
+};
+
+Ballon.prototype.updateLanded = function() {
 
     this.x -= this.vx + GameEngine.ENV.speed * 6;
 
-    if (this.leftWorldOnLeft()) {
-
-        this.setState('dead');
-
-    }
 };
 
 Ballon.prototype.updateCrashing = function() {
@@ -206,15 +216,13 @@ Ballon.prototype.updateCrashing = function() {
     if (this.isCrashed) {
         
         if (this.collideWithBottom()) {
-            console.log('now iam dead');
-            this.stateManager.change('dead');
+            this.setState('dead');
             return false;
         }
 
         this.angle -= 0.1;
         this.vy = 1;
         this.y += this.vy * this.gravity + 2;
-
     }
 
 };
