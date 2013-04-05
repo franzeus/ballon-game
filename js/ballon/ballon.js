@@ -44,8 +44,59 @@ var Ballon = function(_options) {
         color : '#00FF00'
     };
 
+    this.states = [
+        
+        // Falling down
+        {
+            name : 'decline',
+            onStart : true,
+            updateFn : 'updateDecline',
+            sprite : {
+                frame : 0
+            }
+        },
+
+        // Flying Up
+        {
+            name : 'rise',
+            updateFn : 'updateRise',
+            sprite : {
+                frame : 1
+            }
+        },
+
+        // Crashing
+        {
+            name : 'crashing',
+            updateFn : 'updateCrashing',
+            sprite : {
+                frame : 0
+            }
+        },
+
+        // landed
+        {
+            name : 'landed',
+            updateFn : 'updateLanded',
+            sprite : {
+                frame : 0
+            }
+        },
+
+        // Dead
+        {
+            name : 'dead',
+            updateFn : 'dead',
+            sprite : {
+                frame : 0
+            }
+        }
+    ];
+
     this.drawFunction = this.drawImage;
     this.registerEvents();
+
+    this.stateManager = new StateManager(this.states);
 };
 
 Ballon.prototype = new Graphic();
@@ -80,49 +131,42 @@ Ballon.prototype.registerEvents = function() {
 
 Ballon.prototype.update = function() {
 
-    // Has a crash
-    if (this.isCrashed) {
-        this.updateCrash();
-        return false;
-    }
-
     if (this.doWiggle) {
         this.wiggle();
     }
 
     // Collided with bottom
     if (this.collideWithBottom() && !this.isUp) {
-        this.cancelWiggle();
 
-        this.x -= this.vx + GameEngine.ENV.speed * 6;
-
-        if (this.leftWorldOnLeft()) {
-
-            GameEngine.stop();
-
-        }
-
-        return false;
+        this.setState('landed');        
     
     // Collided with top
     } else if (this.collideWithTop() && this.isUp) {
+        
         this.cancelWiggle();
+        
         return false;
-
-    // Apply gravity
-    } else {
-        this.doWiggle = true;
-        this.y += this.vy * this.gravity - this.riseUp;
-    
     }
+    
+    // Update depending on current state
+    this.updateFn = this.stateManager.currentState['updateFn'];
+    this[this.updateFn]();
+};
 
-    // Flying up
+Ballon.prototype.updateRise = function() {
+    
     if (this.isUp) {
         this.riseUp += this.acceleration;
-    
-    // Flying down
-    } else {
+    }
 
+    this.fly();
+};
+
+
+Ballon.prototype.updateDecline = function() {
+    
+    if (!this.isUp) {
+        
         // Slow down ballon, when falling down and y > 200
         if (this.y > 200) {
 
@@ -130,9 +174,60 @@ Ballon.prototype.update = function() {
                 this.riseUp += 0.04;
         
         }
+
     }
 
-}
+    this.fly();
+};
+
+Ballon.prototype.fly = function() {
+    this.doWiggle = true;
+    this.y += this.vy * this.gravity - this.riseUp;
+};
+
+Ballon.prototype.updateLanded = function() {
+    
+    this.cancelWiggle();
+
+    this.x -= this.vx + GameEngine.ENV.speed * 6;
+
+    if (this.leftWorldOnLeft()) {
+
+        GameEngine.stop();
+
+    }
+};
+
+Ballon.prototype.updateCrashing = function() {
+
+    // Has a crash
+    if (this.isCrashed) {
+        
+        if (this.collideWithBottom()) {
+            this.stateManager.change('dead');
+            return false;
+        }
+
+        this.angle -= 0.1;
+        this.vy = 1;
+        this.y += this.vy * this.gravity + 2;
+
+    }
+
+};
+
+Ballon.prototype.initCrashing = function() {
+    this.setRelease();
+    this.doWiggle = false;
+    this.balancePointY = null;
+    this.isCrashed = true;
+    this.blockNavigation = true;
+};
+
+Ballon.prototype.dead = function() {
+    GameEngine.lose();
+    GameEngine.stop();
+};
 
 Ballon.prototype.wiggle = function() {
 
@@ -157,8 +252,9 @@ Ballon.prototype.cancelWiggle = function() {
 Ballon.prototype.setDirectionUp = function() {
 
     if (this.blockNavigation) return false;
-    
-    this.currentFrame = 1;
+
+    this.setState('rise');
+
     this.isUp = true;
     this.riseUp = this.rise;
     this.vy = -1;
@@ -170,7 +266,8 @@ Ballon.prototype.setRelease = function() {
         
     if (this.blockNavigation) return false;
 
-    this.currentFrame = 0;
+    this.setState('decline');
+
     this.riseUp = 0;
     this.vy = 1;
     this.isUp = false;
@@ -198,27 +295,6 @@ Ballon.prototype.hasCollidedWith = function(object, callback) {
     if (typeof callback === 'function') {
         callback();
     }
-};
-
-Ballon.prototype.initCrashing = function() {
-    this.setRelease();
-    this.doWiggle = false;
-    this.balancePointY = null;
-    this.isCrashed = true;
-    this.blockNavigation = true;
-};
-
-Ballon.prototype.updateCrash = function() {
-
-    if (this.collideWithBottom()) {
-        GameEngine.lose();
-        GameEngine.stop();
-        return false;
-    }
-
-    this.angle -= 0.1;
-    this.vy = 1;
-    this.y += this.vy * this.gravity + 2;
 };
 
 Ballon.prototype.selected = function() {
