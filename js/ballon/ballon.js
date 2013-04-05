@@ -50,6 +50,7 @@ var Ballon = function(_options) {
         {
             name : 'decline',
             onStart : true,
+            beforeFn : 'initDecline',
             updateFn : 'updateDecline',
             sprite : {
                 frame : 0
@@ -59,6 +60,7 @@ var Ballon = function(_options) {
         // Flying Up
         {
             name : 'rise',
+            beforeFn : 'initRise',
             updateFn : 'updateRise',
             sprite : {
                 frame : 1
@@ -68,6 +70,7 @@ var Ballon = function(_options) {
         // Crashing
         {
             name : 'crashing',
+            beforeFn : 'initCrashing',
             updateFn : 'updateCrashing',
             sprite : {
                 frame : 0
@@ -86,7 +89,7 @@ var Ballon = function(_options) {
         // Dead
         {
             name : 'dead',
-            updateFn : 'dead',
+            updateFn : 'setDead',
             sprite : {
                 frame : 0
             }
@@ -97,6 +100,7 @@ var Ballon = function(_options) {
     this.registerEvents();
 
     this.stateManager = new StateManager(this.states);
+    this.updateFn = this.stateManager.currentState['updateFn'];
 };
 
 Ballon.prototype = new Graphic();
@@ -105,11 +109,11 @@ Ballon.prototype.registerEvents = function() {
     var self = this;
 
     jQuery(GameEngine.canvas).mousedown(function() {
-        self.setDirectionUp.call(self);
+        self.setState.call(self, 'rise');
     });
 
     jQuery(GameEngine.canvas).mouseup(function() {
-        self.setRelease.call(self);
+        self.setState.call(self, 'decline');
     });
 
     var ARROW_UP = 38,
@@ -118,12 +122,12 @@ Ballon.prototype.registerEvents = function() {
     jQuery(document).keydown(function(e) {
 
         if (e.keyCode === ARROW_UP)
-            self.setDirectionUp.call(self);
+            self.setState.call(self, 'rise');
 
     });
 
     jQuery(document).keyup(function(e) {
-        self.setRelease.call(self);
+        self.setState.call(self, 'decline');
     });
 
     return this;
@@ -136,7 +140,7 @@ Ballon.prototype.update = function() {
     }
 
     // Collided with bottom
-    if (this.collideWithBottom() && !this.isUp) {
+    if (this.collideWithBottom() && !this.isUp && !this.isCrashed) {
 
         this.setState('landed');        
     
@@ -149,7 +153,6 @@ Ballon.prototype.update = function() {
     }
     
     // Update depending on current state
-    this.updateFn = this.stateManager.currentState['updateFn'];
     this[this.updateFn]();
 };
 
@@ -161,7 +164,6 @@ Ballon.prototype.updateRise = function() {
 
     this.fly();
 };
-
 
 Ballon.prototype.updateDecline = function() {
     
@@ -186,14 +188,14 @@ Ballon.prototype.fly = function() {
 };
 
 Ballon.prototype.updateLanded = function() {
-    
+
     this.cancelWiggle();
 
     this.x -= this.vx + GameEngine.ENV.speed * 6;
 
     if (this.leftWorldOnLeft()) {
 
-        GameEngine.stop();
+        this.setState('dead');
 
     }
 };
@@ -204,6 +206,7 @@ Ballon.prototype.updateCrashing = function() {
     if (this.isCrashed) {
         
         if (this.collideWithBottom()) {
+            console.log('now iam dead');
             this.stateManager.change('dead');
             return false;
         }
@@ -218,18 +221,16 @@ Ballon.prototype.updateCrashing = function() {
 
 Ballon.prototype.initCrashing = function() {
     
-    this.setState('crashing');
-
     this.blockNavigation = true;
 
-    this.setRelease();
+    this.initDecline();
     
     this.doWiggle = false;
     this.balancePointY = null;
     this.isCrashed = true;
 };
 
-Ballon.prototype.dead = function() {
+Ballon.prototype.setDead = function() {
     GameEngine.lose();
     GameEngine.stop();
 };
@@ -254,11 +255,9 @@ Ballon.prototype.cancelWiggle = function() {
     this.doWiggle = false;
 };
 
-Ballon.prototype.setDirectionUp = function() {
+Ballon.prototype.initRise = function() {
 
     if (this.blockNavigation) return false;
-
-    this.setState('rise');
 
     this.isUp = true;
     this.riseUp = this.rise;
@@ -267,11 +266,9 @@ Ballon.prototype.setDirectionUp = function() {
     this.wiggleMinAngle = 2;
 };
 
-Ballon.prototype.setRelease = function() {
+Ballon.prototype.initDecline = function() {
         
     if (this.blockNavigation) return false;
-
-    this.setState('decline');
 
     this.riseUp = 0;
     this.vy = 1;
@@ -292,7 +289,7 @@ Ballon.prototype.hasCollidedWith = function(object, callback) {
     this.lifes--;
 
     if (this.lifes <= 0) {
-        this.initCrashing();
+        this.setState('crashing');
     }
 
     this.lastObjectCrash = object;
