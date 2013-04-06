@@ -178,7 +178,9 @@ ObstacleCow.prototype.reset = function() {
 ObstacleCow.prototype.hasCollidedWith = function(object, callback) {
 
     if (object.type !== 'ballon' && this.attachedTo) {
-        this.attachedTo.obj.objectToCarry = null;
+        
+        this.attachedTo.obj.detachObject(this);
+
         this.detach();
         this.isfallingDown = true;
         this.vy = 1;

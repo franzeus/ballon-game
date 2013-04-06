@@ -1,16 +1,24 @@
 <html>
 <head>
     <title>Game</title>
+    <link href='http://fonts.googleapis.com/css?family=Snippet' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="css/app.css">
 </head>
 <body>
 
+
+
 <div id="wrapper">
 	<!-- <div id="parallaxFrame"></div> -->
-    
     <div id="pictureFrame"></div>
     <canvas id="canvas"></canvas>
+
+    <div id="highscore">
+		<span id="score"></span>
+	</div>
 </div>
+
+
 
 <!-- JQuery is necessary -->
 <script type="text/javascript" src="../spui_engine/js/lib/jquery.min.js"></script>
@@ -28,6 +36,7 @@
 <!-- Including the game objects -->
 <script type="text/javascript" src="js/ballon/ballon.js"></script>
 <script type="text/javascript" src="js/ballon/obstacle.js"></script>
+<script type="text/javascript" src="js/ballon/highscore.js"></script>
 
 <!-- Initialize Game -->
 <script type="text/javascript" src="js/ballon/init.js"></script>

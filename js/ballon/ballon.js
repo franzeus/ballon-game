@@ -324,6 +324,15 @@ Ballon.prototype.hasCollidedWith = function(object, callback) {
     }
 };
 
+Ballon.prototype.detachObject = function(object) {
+    this.objectToCarry = null;
+
+    if (this.lastObjectCrash === object) {
+        this.lastObjectCrash = null;
+    }
+
+};
+
 Ballon.prototype.reduceLife = function() {
 
     this.lifes--;

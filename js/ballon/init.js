@@ -6,6 +6,8 @@ $(document).ready(function() {
   GameEngine.maxFollowY = -86;
   GameEngine.scale = 1;
 
+  Highscore.init();
+
   var ballon = new Ballon({
   	x : 200,
   	y : 100
@@ -82,4 +84,10 @@ $(document).ready(function() {
   
   // Start game
   GameEngine.start();
+  Highscore.start();
+
+  GameEngine.onLose = function() {
+    Highscore.stop();
+  };
+  
 });

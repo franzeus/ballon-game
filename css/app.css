@@ -32,6 +32,15 @@ body { font-family: 'Arial', sans-serif; font-size: 0.9em; margin:0; line-height
 	background: url('../assets/pic_frame_small.png') no-repeat;
 }
 
+#highscore {
+  z-index: 5;
+  position: absolute;
+  left:10px; top:10px;
+  color:#FFF;
+  font-size: 2em;
+  font-family: 'Snippet', sans-serif;
+}
+
 #canvas {
   z-index:3;
   position:absolute;
