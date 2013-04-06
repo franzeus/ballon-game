@@ -31,7 +31,7 @@ var Ballon = function(_options) {
     this.wiggleMaxAngle = 1;
     this.wiggleMinAngle = -1;
 
-    this.lifes = 2;
+    this.lifes = 3;
     this.isCrashed = false;
     this.blockNavigation = false;
     this.lastObjectCrash = null;
@@ -91,10 +91,7 @@ var Ballon = function(_options) {
         {
             name : 'pushedBack',
             beforeFn : 'initPushedBack',
-            updateFn : 'updatePushedBack',
-            sprite : {
-                frame : 1
-            }
+            updateFn : 'updatePushedBack'
         },
 
         // Dead
@@ -112,6 +109,11 @@ var Ballon = function(_options) {
 
     this.stateManager = new StateManager(this.states);
     this.updateFn = this.stateManager.currentState['updateFn'];
+
+    this.lifeBar.show = true;
+    this.lifeBar.width = this.width;
+    this.lifeBar.totalLifes = this.lifes;
+    this.lifeBar.lifes = this.lifes;
 };
 
 Ballon.prototype = new Graphic();
@@ -143,12 +145,6 @@ Ballon.prototype.registerEvents = function() {
     });
 
     return this;
-};
-
-Ballon.prototype.setFlyState = function(type) {
-    if (!this.isCrashed && !this.blockNavigation) {
-        this.setState(type);
-    }
 };
 
 Ballon.prototype.update = function() {
@@ -203,6 +199,12 @@ Ballon.prototype.updateDecline = function() {
     }
 
     this.fly();
+};
+
+Ballon.prototype.setFlyState = function(type) {
+    if (!this.isCrashed && !this.blockNavigation) {
+        this.setState(type);
+    }
 };
 
 Ballon.prototype.fly = function() {
@@ -299,37 +301,48 @@ Ballon.prototype.hasCollidedWith = function(object, callback) {
     if (this.isCrashed) return false;
 
     if (this.lastObjectCrash === object) {
-        this.setState('pushedBack');
         return false;
     }
     
     this.lastObjectCrash = object;
 
-    this.lifes--;
+    this.setState('pushedBack');
 
-    if (this.lifes <= 0) {
-        this.setState('crashing');
-    }
+    this.reduceLife();
 
     if (typeof callback === 'function') {
         callback();
     }
 };
 
-Ballon.prototype.initPushedBack = function() {
+Ballon.prototype.reduceLife = function() {
+
+    this.lifes--;
+    this.lifeBar.lifes = this.lifes;
     
+    if (this.lifes <= 0) {
+        this.setState('crashing');
+    }
+    
+};
+
+Ballon.prototype.initPushedBack = function() {
     this.blockNavigation = true;
-    this.pushBackLimit = this.x - 60;
+    this.pushBackLimit = this.x - 40;
     this.initPushPackPosition = { x: this.x };
-    this.pushBackForce = 1;
-    this.pushBackAcceleration = 0.5;
+    this.pushBackForce = 4;
+    this.pushBackAcceleration = 1;
 };
 
 Ballon.prototype.updatePushedBack = function() {
 
     if ( this.x > this.pushBackLimit ) {
-        this.pushBackAcceleration += 0.5;
+
+        if(this.pushBackAcceleration > 0)
+            this.pushBackAcceleration *= 0.1 + 0.2;
+        
         this.x -= this.pushBackForce + this.pushBackAcceleration;
+
     } else {
         this.blockNavigation = false;
         this.setState('decline');
