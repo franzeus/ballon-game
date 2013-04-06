@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-  var debug = true;
+  var debug = false;
 
   GameEngine.init('canvas', debug);
   GameEngine.maxFollowY = -86;
@@ -11,15 +11,21 @@ $(document).ready(function() {
   	y : 100
   });
 
-  var obstacle1 = new Obstacle({
+  var obstacle1 = new ObstacleBee({
     x : 500,
     y : 100
   });
 
-  var obstacle2 = new Obstacle({
+  var obstacle2 = new ObstacleSinus({
     x : 500,
     y : 300,
     vy : 1
+  });
+
+  var obstacleLinear = new ObstacleLinear({
+    x : 700,
+    y : 340,
+    vx : -1
   });
 
   var parallaxOffsetY = -86;
@@ -50,6 +56,7 @@ $(document).ready(function() {
   
   GameEngine.objectManager.addObject(obstacle1);
   GameEngine.objectManager.addObject(obstacle2);
+  GameEngine.objectManager.addObject(obstacleLinear);
 
   //
   //GameEngine.followObject(ballon);
