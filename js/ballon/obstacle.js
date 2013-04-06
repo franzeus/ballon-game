@@ -94,10 +94,6 @@ ObstacleLinear.prototype.reset = function() {
     this.acceleration = 0.04;
 };
 
-Obstacle.prototype.hasCollidedWith = function(object, callback) {
-
-};
-
 // ---------------------------------------
 // Sinus moving Obstacle
 var ObstacleSinus = function(_options) {
@@ -152,3 +148,50 @@ ObstacleBee.prototype.reset = function() {
     this.moveY = this.initY;
 };
 
+// ---------------------------------------
+// Obstacle Cow
+var ObstacleCow = function(_options) {
+    
+    ObstacleLinear.apply(this, arguments);
+
+    this.type = 'cow';
+
+    this.width = 40;
+    this.height = 30;
+    
+    this.isfallingDown = false;
+
+    this.img = new Image();
+    this.img.src = 'assets/cow.gif';
+    this.drawFunction = this.drawImage;
+};
+ObstacleCow.prototype = new ObstacleLinear();
+
+ObstacleCow.prototype.reset = function() {
+    this.x = this.initX;
+    this.y = this.initY;
+    this.isfallingDown = false;
+    this.speed = GameEngine.ENV.speed * this.speedMultiplikator;
+    this.updateFn = this.updateLinear;
+};
+
+ObstacleCow.prototype.hasCollidedWith = function(object, callback) {
+
+    if (object.type !== 'ballon' && this.attachedTo) {
+        this.attachedTo.obj.objectToCarry = null;
+        this.detach();
+        this.isfallingDown = true;
+        this.vy = 1;
+        this.updateFn = this.fallDown;
+    }
+
+};
+
+ObstacleCow.prototype.fallDown = function(object, callback) {
+
+    if (this.isWithinBoard()) {
+        this.y += this.vy * 4;
+    } else {
+        this.reset();
+    }
+};

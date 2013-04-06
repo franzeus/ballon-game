@@ -35,6 +35,7 @@ var Ballon = function(_options) {
     this.isCrashed = false;
     this.blockNavigation = false;
     this.lastObjectCrash = null;
+    this.objectToCarry = null;
 
     this.boundingBox = {
         offsetX : 5,
@@ -209,10 +210,7 @@ Ballon.prototype.setFlyState = function(type) {
 
 Ballon.prototype.fly = function() {
     this.doWiggle = true;
-    //this.y += this.vy * this.gravity - this.riseUp;
-
-    this.y -= this.vy * this.gravity + this.riseUp;
-
+    this.y += this.vy * this.gravity - this.riseUp;
 };
 
 Ballon.prototype.initLanded = function() {
@@ -308,10 +306,12 @@ Ballon.prototype.hasCollidedWith = function(object, callback) {
     }
 
     if (object.type === 'cow' && this.objectToCarry !== object) {
-        this.objectToCarry = object;
-        this.gravity = 0.5;
-        object.attachTo.call(object, this, { x: -4, y: this.height - 5});
-    
+
+        if (!object.isfallingDown) {
+            this.objectToCarry = object;
+            object.attachTo.call(object, this, { x: -4, y: this.height - 5});
+        }
+        
     } else {
         this.setState('pushedBack');
         this.reduceLife();

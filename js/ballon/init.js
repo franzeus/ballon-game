@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-  var debug = false;
+  var debug = true;
 
   GameEngine.init('canvas', debug);
   GameEngine.maxFollowY = -86;
@@ -30,7 +30,6 @@ $(document).ready(function() {
   });
 
   var cow = new ObstacleLinear({
-    type : 'cow',
     x : 700,
     y : 340,
     width: 40,
@@ -40,15 +39,9 @@ $(document).ready(function() {
     }
   });
 
-  var cow2 = new ObstacleLinear({
-    type : 'cow',
+  var cow2 = new ObstacleCow({
     x : 560,
-    y : 340,
-    width: 40,
-    height: 30,
-    img: {
-      src : 'assets/cow.gif'
-    }
+    y : 340
   });
 
   var parallaxOffsetY = -86;
@@ -80,8 +73,8 @@ $(document).ready(function() {
   GameEngine.objectManager.addObject(obstacle1);
   GameEngine.objectManager.addObject(obstacle2);
   //GameEngine.objectManager.addObject(obstacleLinear);
-  GameEngine.objectManager.addObject(cow);
   GameEngine.objectManager.addObject(cow2);
+  //GameEngine.objectManager.addObject(cow2);
   //
   //GameEngine.followObject(ballon, 'x');
 
