@@ -23,9 +23,32 @@ $(document).ready(function() {
   });
 
   var obstacleLinear = new ObstacleLinear({
+    x : 900,
+    y : 340,
+    vx : -1,
+    width: 60
+  });
+
+  var cow = new ObstacleLinear({
+    type : 'cow',
     x : 700,
     y : 340,
-    vx : -1
+    width: 40,
+    height: 30,
+    img: {
+      src : 'assets/cow.gif'
+    }
+  });
+
+  var cow2 = new ObstacleLinear({
+    type : 'cow',
+    x : 560,
+    y : 340,
+    width: 40,
+    height: 30,
+    img: {
+      src : 'assets/cow.gif'
+    }
   });
 
   var parallaxOffsetY = -86;
@@ -56,10 +79,11 @@ $(document).ready(function() {
   
   GameEngine.objectManager.addObject(obstacle1);
   GameEngine.objectManager.addObject(obstacle2);
-  GameEngine.objectManager.addObject(obstacleLinear);
-
+  //GameEngine.objectManager.addObject(obstacleLinear);
+  GameEngine.objectManager.addObject(cow);
+  GameEngine.objectManager.addObject(cow2);
   //
-  //GameEngine.followObject(ballon);
+  //GameEngine.followObject(ballon, 'x');
 
   //jQuery('#parallaxFrame').addClass('parallaxAnimation');
   

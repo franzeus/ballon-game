@@ -3,7 +3,8 @@ var Obstacle = function(_options) {
 
     Graphic.apply(this, arguments);
 
-    this.type = 'obstacle';
+    this.type = this.type ? this.type : 'obstacle';
+    this.group = 'obstacle';
 
     this.vx = -1;
     this.vy = 0;
@@ -81,20 +82,20 @@ var ObstacleLinear = function(_options) {
     
     Obstacle.apply(this, arguments);
 
-    this.width = 30;
-    this.height = 10;
-
     this.acceleration = 0.04;
-    this.speedMultiplikator = 20;
-    this.speed = GameEngine.ENV.speed * this.speedMultiplikator;
 
     this.updateFn = this.updateLinear;
+    this.rotateToDirection = false;
 };
 ObstacleLinear.prototype = new Obstacle();
 
 ObstacleLinear.prototype.reset = function() {
     this.speed = GameEngine.ENV.speed * this.speedMultiplikator;
     this.acceleration = 0.04;
+};
+
+Obstacle.prototype.hasCollidedWith = function(object, callback) {
+
 };
 
 // ---------------------------------------

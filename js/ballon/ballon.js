@@ -31,7 +31,7 @@ var Ballon = function(_options) {
     this.wiggleMaxAngle = 1;
     this.wiggleMinAngle = -1;
 
-    this.lifes = 3;
+    this.lifes = 5;
     this.isCrashed = false;
     this.blockNavigation = false;
     this.lastObjectCrash = null;
@@ -209,7 +209,10 @@ Ballon.prototype.setFlyState = function(type) {
 
 Ballon.prototype.fly = function() {
     this.doWiggle = true;
-    this.y += this.vy * this.gravity - this.riseUp;
+    //this.y += this.vy * this.gravity - this.riseUp;
+
+    this.y -= this.vy * this.gravity + this.riseUp;
+
 };
 
 Ballon.prototype.initLanded = function() {
@@ -300,15 +303,21 @@ Ballon.prototype.hasCollidedWith = function(object, callback) {
     // Not already crashed
     if (this.isCrashed) return false;
 
-    if (this.lastObjectCrash === object) {
+    if (this.lastObjectCrash === object || this.objectToCarry === object) {
         return false;
+    }
+
+    if (object.type === 'cow' && this.objectToCarry !== object) {
+        this.objectToCarry = object;
+        this.gravity = 0.5;
+        object.attachTo.call(object, this, { x: -4, y: this.height - 5});
+    
+    } else {
+        this.setState('pushedBack');
+        this.reduceLife();
     }
     
     this.lastObjectCrash = object;
-
-    this.setState('pushedBack');
-
-    this.reduceLife();
 
     if (typeof callback === 'function') {
         callback();
@@ -329,7 +338,7 @@ Ballon.prototype.reduceLife = function() {
 Ballon.prototype.initPushedBack = function() {
     this.blockNavigation = true;
     this.pushBackLimit = this.x - 40;
-    this.initPushPackPosition = { x: this.x };
+    this.initPushPackPosition = { x: this.x, y: this.y };
     this.pushBackForce = 4;
     this.pushBackAcceleration = 1;
 };
@@ -343,6 +352,7 @@ Ballon.prototype.updatePushedBack = function() {
         
         this.x -= this.pushBackForce + this.pushBackAcceleration;
 
+    // Finished pushBack
     } else {
         this.blockNavigation = false;
         this.setState('decline');
@@ -351,7 +361,7 @@ Ballon.prototype.updatePushedBack = function() {
 };
 
 Ballon.prototype.selected = function() {
-    GameEngine.followObject(this);
+    GameEngine.followObject(this, 'x');
 };
 
 Ballon.prototype.deselect = function() {
