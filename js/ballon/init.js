@@ -52,7 +52,7 @@ $(document).ready(function() {
     x: 0,
     y: parallaxOffsetY,
     width: 960,
-    height: 480,
+    height: 390,
     vx: 1,
     src: 'assets/parallax_background.jpg'
   });
@@ -68,7 +68,7 @@ $(document).ready(function() {
 
   // Add objects
   GameEngine.objectManager.addObject(parallax1);
-  GameEngine.objectManager.addObject(parallax2);
+  //GameEngine.objectManager.addObject(parallax2);
 
   GameEngine.objectManager.addObject(ballon);
   

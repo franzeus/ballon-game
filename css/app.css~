@@ -6,6 +6,15 @@ body { font-family: 'Arial', sans-serif; font-size: 0.9em; margin:0; line-height
   position:relative;
 }
 
+.parallaxAnimation {
+    animation: fly 0.2s steps(3) 0 infinite;
+}
+
+@keyframes fly {
+    from { background-position: 0 0; }
+    to { background-position: -450px 0; }
+}
+
 #parallaxFrame {
   z-index: 2;
   pointer-events:none;
@@ -14,20 +23,8 @@ body { font-family: 'Arial', sans-serif; font-size: 0.9em; margin:0; line-height
   height:390px;
   background: url('../assets/parallax_background.jpg') repeat-x;
   background-size: 40%;
-  /*-webkit-transition: all 10s linear;*/
 }
 
-#parallaxCanvas {
-  pointer-events:none;
-  position:absolute;
-  width:640px;
-  height:390px;
-  background:#000000;
-}
-
-.parallaxAnimation {
-  -webkit-transform: translate(-200px, 0);
-}
 
 #pictureFrame {
   overflow: hidden;
@@ -38,15 +35,6 @@ body { font-family: 'Arial', sans-serif; font-size: 0.9em; margin:0; line-height
 	top:-65px;
 	left:-48px;
 	background: url('../assets/pic_frame_small.png') no-repeat;
-}
-
-#highscore {
-  z-index: 5;
-  position: absolute;
-  left:10px; top:10px;
-  color:#FFF;
-  font-size: 2em;
-  font-family: 'Snippet', sans-serif;
 }
 
 #canvas {
