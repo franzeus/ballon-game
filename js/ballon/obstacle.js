@@ -72,6 +72,7 @@ Obstacle.prototype.hasCollidedWith = function(object, callback) {
     
     if( object.type === 'ballon') {
         this.isVisible = false;
+        this.clearLastPosition();
     }
 
 };
@@ -158,7 +159,6 @@ var ObstacleCow = function(_options) {
 
     this.width = 40;
     this.height = 30;
-    
     this.isfallingDown = false;
 
     this.img = new Image();

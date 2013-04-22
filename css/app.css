@@ -31,7 +31,7 @@ body { font-family: 'Arial', sans-serif; font-size: 0.9em; margin:0; line-height
 
 #pictureFrame {
   overflow: hidden;
-  z-index: 2;
+  z-index: 10;
 	pointer-events:none;
 	position:absolute;
 	width:732px; height:513px;
@@ -43,7 +43,7 @@ body { font-family: 'Arial', sans-serif; font-size: 0.9em; margin:0; line-height
 #highscore {
   z-index: 5;
   position: absolute;
-  left:10px; top:10px;
+  left:20px; top:10px;
   color:#FFF;
   font-size: 2em;
   font-family: 'Snippet', sans-serif;

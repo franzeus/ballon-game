@@ -137,8 +137,13 @@ Ballon.prototype.registerEvents = function() {
     // Keyboard Interaction
     jQuery(document).keydown(function(e) {
 
-        if (e.keyCode === ARROW_UP)
+        var key = e.keyCode;
+
+        if (key === KEY.ARROW_UP || key === KEY.SPACEBAR) {
+
             self.setFlyState.call(self, 'rise');
+        }
+
     });
 
     jQuery(document).keyup(function(e) {
@@ -247,6 +252,7 @@ Ballon.prototype.initCrashing = function() {
     this.doWiggle = false;
     this.balancePointY = null;
     this.isCrashed = true;
+    this.doClearLastPosition = false;
 };
 
 Ballon.prototype.setDead = function() {
